@@ -2,6 +2,8 @@
 
 CyberGuard is a Django application for submitting fraud complaints, uploading evidence, tracking case status, and investigator review.
 
+It provides separate victim and investigator workflows, unique case tracking IDs, encrypted victim phone numbers, and SHA-256 integrity checks for uploaded evidence.
+
 This guide covers a complete Windows installation.
 
 ## Requirements
@@ -80,7 +82,7 @@ python -m django --version
 
 ## 5. Configure email and evidence storage
 
-The application sends registration and status emails through Gmail SMTP. Open `core\settings.py` and replace the email values with your own:
+The application sends registration and case-status emails through Gmail SMTP. Before running it, open `core\settings.py` and replace the email values with your own:
 
 ```python
 EMAIL_HOST_USER = "your-email@gmail.com"
@@ -95,7 +97,7 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 Emails will then appear in the PowerShell window running Django.
 
-Never publish real passwords, API keys, or production secret keys. Before public deployment, move secrets to environment variables and replace the development `SECRET_KEY` in `core\settings.py`.
+> **Security warning:** Do not commit real passwords, API keys, or production secret keys. This project currently has sensitive-looking configuration values in `core\settings.py`; treat them as exposed, revoke or rotate them, and replace them before sharing the project. For deployment, load all secrets from environment variables and generate a new Django `SECRET_KEY`.
 
 Uploaded evidence is stored by default in:
 
@@ -111,7 +113,7 @@ New-Item -ItemType Directory -Force "$env:USERPROFILE\Desktop\evidence_files"
 
 ## 6. Prepare the database
 
-The project uses SQLite and includes `db.sqlite3`. Apply migrations:
+The project uses SQLite. The database file (`db.sqlite3`) is created locally when migrations run and is intentionally ignored by Git. Apply migrations:
 
 ```powershell
 python manage.py migrate
@@ -152,13 +154,13 @@ Useful pages:
 | Django admin | `http://127.0.0.1:8000/admin/` |
 | Investigator login | `http://127.0.0.1:8000/investigator/login/` |
 
-## 10. User workflow
+## 10. Victim workflow
 
 1. Register at `/register/`.
 2. Log in and submit a fraud complaint.
 3. Upload evidence if available.
 4. Save the generated tracking ID.
-5. Use the dashboard or tracking page to check status.
+5. Use the dashboard or `/track/` page to check status.
 
 ## 11. Investigator workflow
 
@@ -185,7 +187,7 @@ If `.venv` is missing, recreate it and reinstall with `python -m venv .venv`, `.
 
 **Port 8000 is busy:** run `python manage.py runserver 8001` and open `http://127.0.0.1:8001/`.
 
-**Migration errors:** run `python manage.py makemigrations` followed by `python manage.py migrate`. Do not delete a database containing required data.
+**Migration errors:** first run `python manage.py migrate`. Only run `python manage.py makemigrations` after you intentionally change a model, then run `python manage.py migrate`. Do not delete a database containing required data.
 
 **Email errors:** check `core\settings.py`, or use the console email backend for local development.
 
