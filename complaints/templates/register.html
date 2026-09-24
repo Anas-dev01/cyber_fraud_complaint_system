@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h3 class="text-center">Victim Registration</h3>
+                <p class="text-muted text-center small">Please provide your legal details for forensic reporting.</p>
+                <hr>
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit" class="btn btn-success btn-block shadow-sm">Create Account</button>
+                </form>
+                <div class="mt-3 text-center">
+                    <p>Already have an account? <a href="{% url 'login' %}">Sign In</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+REMEBER SAY YOU MAKE CHANGES TO URLS AND E DY KALI BASED, SO NO FORGET IN CASE OF CHANGES LATER
+
+
+
+Jaafar
+Pass#123
+
+Open your browser in Kali.
+
+Go to: http://127.0.0.1:8000/admin
+
+Log in with the Superuser account you just created.
+
+
+That is a smart way to work. Breaking a large project into a "Roadmap" keeps you from feeling overwhelmed, especially when balancing your 400-level IT coursework with project development.
+
+Since you've already completed the Project Setup and Database Architecture, here is the roadmap to take this from a backend skeleton to a fully functional, secure system.
+🗺️ Project Roadmap
+Phase 1: The Security Layer (Current Step)
+
+    Integrity Module: Code integrity.py to generate SHA-256 hashes for evidence.
+
+    Privacy Module: Code encryption.py to handle sensitive victim data (PII).
+
+    Model Integration: Update models.py to auto-calculate hashes on file upload.
+
+Phase 2: The Backend Logic (Views & URLs)
+
+    Victim Logic: Create views for submitting a complaint and checking status.
+
+    Authentication: Set up login/registration for victims.
+
+    Routing: Connect the views to URLs in complaints/urls.py.
+
+Phase 3: The Frontend (The Interface)
+
+    Base Template: Create a professional layout with a navigation bar.
+
+    Forms: Build the "Report Fraud" form using Django Crispy Forms.
+
+    Status Page: Design the tracking dashboard for victims.
+
+Phase 4: Final Testing & Defense Prep
+
+    Penetration Testing: Use your Kali tools (like OWASP ZAP) to test your own app.
+
+    Technical Report: Draft the documentation for your B.Sc. certification.
+
+
+
+
+
+
+ REMEMBER TO ASK HOW TO PROPERLY REPRESENT THAT TAMPER TEST 

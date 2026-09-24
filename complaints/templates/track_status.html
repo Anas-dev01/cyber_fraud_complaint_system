@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center py-5">
+    <div class="col-md-8">
+        <div class="card shadow border-0">
+            <div class="card-body p-5">
+                <h2 class="text-center mb-4">Track Your Case</h2>
+                
+                <form method="GET" class="mb-5">
+                    <div class="input-group input-group-lg">
+                        <input type="text" name="tracking_id" class="form-control" placeholder="Enter 8-digit Tracking ID (e.g., A1B2C3D4)" value="{{ request.GET.tracking_id }}">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary px-4" type="submit">Search</button>
+                        </div>
+                    </div>
+                </form>
+
+                {% if complaint %}
+                <div class="alert alert-info border-0 shadow-sm p-4">
+                    <h3 class="h5 border-bottom pb-2">Case Found: {{ complaint.tracking_id }}</h3>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <p><strong>Status:</strong> 
+                                <span class="badge badge-{% if complaint.status == 'PENDING' %}warning{% elif complaint.status == 'INVESTIGATING' %}primary{% else %}success{% endif %}">
+                                    {{ complaint.get_status_display }}
+                                </span>
+                            </p>
+                            <p><strong>Incident:</strong> {{ complaint.get_fraud_type_display }}</p>
+                            <p><strong>Date Reported:</strong> {{ complaint.created_at|date:"F d, Y" }}</p>
+                        </div>
+
+                        <div class="col-md-6 border-left">
+                            <h5 class="h6 text-primary">Investigator Feedback:</h5>
+                            {% if complaint.investigator_remarks %}
+                                <div class="bg-white p-3 rounded border">
+                                    {{ complaint.investigator_remarks }}
+                                </div>
+                            {% else %}
+                                <p class="text-muted small italic">Your case is currently under review. Please check back later for official remarks.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

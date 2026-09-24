@@ -1,0 +1,73 @@
+<script>
+(() => {
+    const formatSize = (bytes) => {
+        if (!bytes) return '0 B';
+        const units = ['B', 'KB', 'MB', 'GB'];
+        const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+        return `${(bytes / Math.pow(1024, index)).toFixed(index ? 1 : 0)} ${units[index]}`;
+    };
+
+    const makePreview = (file) => {
+        const item = document.createElement('div');
+        item.className = 'col-sm-6 col-lg-4 mb-2';
+        const card = document.createElement('div');
+        card.className = 'card h-100 shadow-sm';
+        const body = document.createElement('div');
+        body.className = 'card-body p-2 small';
+        const type = file.type || '';
+        const url = URL.createObjectURL(file);
+
+        if (type.startsWith('image/')) {
+            const image = document.createElement('img');
+            image.src = url;
+            image.alt = `Preview of ${file.name}`;
+            image.className = 'img-fluid rounded mb-2';
+            image.style.maxHeight = '150px';
+            body.appendChild(image);
+        } else if (type === 'application/pdf') {
+            const frame = document.createElement('iframe');
+            frame.src = url;
+            frame.title = `Preview of ${file.name}`;
+            frame.className = 'w-100 border rounded mb-2';
+            frame.style.height = '150px';
+            body.appendChild(frame);
+        } else if (type.startsWith('video/') || type.startsWith('audio/')) {
+            const media = document.createElement(type.startsWith('video/') ? 'video' : 'audio');
+            media.src = url;
+            media.controls = true;
+            media.className = 'w-100 mb-2';
+            if (media.tagName === 'VIDEO') media.style.maxHeight = '150px';
+            body.appendChild(media);
+        } else {
+            const icon = document.createElement('div');
+            icon.className = 'text-muted mb-2';
+            icon.innerHTML = '<i class="fas fa-file fa-2x"></i>';
+            body.appendChild(icon);
+        }
+
+        const name = document.createElement('div');
+        name.className = 'text-truncate font-weight-bold';
+        name.title = file.name;
+        name.textContent = file.name;
+        const size = document.createElement('div');
+        size.className = 'text-muted';
+        size.textContent = formatSize(file.size);
+        body.append(name, size);
+        card.appendChild(body);
+        item.appendChild(card);
+        return item;
+    };
+
+    document.querySelectorAll('input[name="evidence_files"]').forEach((input) => {
+        input.addEventListener('change', () => {
+            const form = input.closest('form');
+            const preview = form.querySelector('.evidence-selection-preview') || document.getElementById('evidence-selection-preview');
+            const list = form.querySelector('.evidence-selection-list') || document.getElementById('evidence-selection-list');
+            if (!preview || !list) return;
+            list.replaceChildren();
+            Array.from(input.files).forEach((file) => list.appendChild(makePreview(file)));
+            preview.classList.toggle('d-none', input.files.length === 0);
+        });
+    });
+})();
+</script>

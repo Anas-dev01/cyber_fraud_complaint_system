@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Victim Profile</h2>
+        <a href="{% url 'investigator_dashboard' %}" class="btn btn-secondary btn-sm">Back to Dashboard</a>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h4>{{ victim.get_full_name|default:victim.username }}</h4>
+            <p class="mb-1"><strong>Username:</strong> @{{ victim.username }}</p>
+            <p class="mb-1"><strong>Email:</strong> <a href="mailto:{{ victim.email }}">{{ victim.email }}</a></p>
+            <p class="mb-0"><strong>Phone number:</strong> {{ profile.decrypted_phone }}</p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h4 class="mb-3">Submitted Reports</h4>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="thead-light">
+                        <tr><th>Tracking ID</th><th>Fraud type</th><th>Amount lost</th><th>Status</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                    {% for complaint in complaints %}
+                        <tr>
+                            <td>{{ complaint.tracking_id }}</td>
+                            <td>{{ complaint.get_fraud_type_display }}</td>
+                            <td>₦{{ complaint.amount_lost }}</td>
+                            <td>{{ complaint.get_status_display }}</td>
+                            <td><a class="btn btn-sm btn-outline-info" href="{% url 'case_detail' complaint.tracking_id %}">View case</a></td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="5" class="text-muted text-center">No reports have been submitted.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

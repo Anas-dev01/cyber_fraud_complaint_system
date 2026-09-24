@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2>Case Details: {{ complaint.tracking_id }}</h2>
+        <a href="{% url 'investigator_dashboard' %}" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left mr-1"></i> Back to Dashboard
+        </a>
+    </div>
+    <hr>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-body shadow-sm">
+                    <h4 class="border-bottom pb-2">Incident Information</h4>
+                    
+                    <div class="mb-3">
+                        <p class="mb-1"><strong>Victim Name:</strong> {{ complaint.victim.first_name }} {{ complaint.victim.last_name }}</p>
+                        <p class="mb-1"><strong>Username:</strong> <span class="text-muted">@{{ complaint.victim.username }}</span></p>
+                        <a href="{% url 'victim_profile' complaint.victim.id %}" class="btn btn-sm btn-outline-info mt-2">View Victim Profile</a>
+                    </div>
+                    <hr>
+                    
+                    <p><strong>Type:</strong> {{ complaint.fraud_type }}</p>
+                    <p><strong>Current Status:</strong> 
+                        <span class="badge badge-{% if complaint.status == 'PENDING' %}warning{% elif complaint.status == 'INVESTIGATING' %}primary{% else %}success{% endif %}">
+                            {{ complaint.get_status_display }}
+                        </span>
+                    </p>
+                    <p><strong>Amount Lost:</strong> ₦{{ complaint.amount_lost }}</p>
+                    <p><strong>Description:</strong> {{ complaint.description }}</p>
+                </div>
+            </div>
+
+            <div class="card bg-light border-primary shadow-sm">
+                <div class="card-body">
+                    {% if complaint.status == 'RESOLVED' %}
+                        <h5 class="card-title text-success font-weight-bold">
+                            <i class="fas fa-lock mr-1"></i> Case Archived / Closed
+                        </h5>
+                        <div class="alert alert-secondary border shadow-sm">
+                            <p class="mb-1"><strong>Final Status:</strong> <span class="badge badge-success">Resolved</span></p>
+                            <p class="mb-1"><strong>Official Remarks:</strong></p>
+                            <div class="bg-white p-3 rounded border italic text-muted">
+                                {{ complaint.investigator_remarks }}
+                            </div>
+                        </div>
+                        <small class="text-danger font-weight-bold d-block text-center mt-2">
+                            This case has been legally signed off. Further modifications are restricted.
+                        </small>
+                    {% else %}
+                        <h5 class="card-title text-primary">Case Action & Feedback</h5>
+                        <form method="POST" action="{% url 'update_case_status' complaint.tracking_id %}">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label class="font-weight-bold">Update Status:</label>
+                                <select name="status" class="form-control mb-3">
+                                    <option value="PENDING" {% if complaint.status == 'PENDING' %}selected{% endif %}>Pending</option>
+                                    <option value="INVESTIGATING" {% if complaint.status == 'INVESTIGATING' %}selected{% endif %}>Investigating</option>
+                                    <option value="RESOLVED" {% if complaint.status == 'RESOLVED' %}selected{% endif %}>Resolved</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="font-weight-bold">Investigator Remarks / Feedback:</label>
+                                <textarea name="remarks" class="form-control" rows="3" placeholder="Explain the conclusion or next steps...">{{ complaint.investigator_remarks }}</textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block mt-3 shadow-sm">Update Case & Send Remarks</button>
+                        </form>
+                        <small class="text-muted mt-2 d-block text-center italic">This feedback will be instantly accessible to the victim.</small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h4 class="text-danger">Forensic Evidence Verification</h4>
+            {% if verifications %}
+                {% for ver in verifications %}
+                    <div class="alert {% if ver.is_valid %}alert-success{% else %}alert-danger{% endif %} shadow-sm">
+                        <strong>File:</strong> {{ ver.file_name }} <br>
+                        <a href="{% url 'preview_evidence' ver.evidence_id %}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-dark mt-2">
+                            <i class="fas fa-{% if ver.can_preview %}eye{% else %}download{% endif %} mr-1"></i>
+                            {% if ver.can_preview %}Preview evidence{% else %}Download evidence{% endif %}
+                        </a>
+                        {% if ver.can_preview %}
+                            {% if 'image/' in ver.content_type %}
+                                <a href="{% url 'preview_evidence' ver.evidence_id %}" target="_blank" rel="noopener"><img src="{% url 'preview_evidence' ver.evidence_id %}" alt="Preview of {{ ver.file_name }}" class="img-fluid d-block mt-3 border rounded" style="max-height: 240px;"></a>
+                            {% elif ver.content_type == 'application/pdf' %}
+                                <iframe src="{% url 'preview_evidence' ver.evidence_id %}" title="Preview of {{ ver.file_name }}" class="w-100 border rounded mt-3" style="height: 280px;"></iframe>
+                            {% endif %}
+                        {% endif %}
+                        
+                        <strong>Status:</strong> 
+                        {% if ver.is_valid %}
+                            <span class="text-success font-weight-bold"><i class="fas fa-check-circle mr-1"></i> Integrity Verified</span>
+                        {% else %}
+                            <span class="text-danger font-weight-bold"><i class="fas fa-exclamation-triangle mr-1"></i> TAMPERED/MODIFIED</span>
+                        {% endif %} 
+                        <br>
+                        <hr>
+                        <div class="small" style="word-break: break-all;">
+                            <strong>Stored Hash:</strong> {{ ver.stored_hash }} <br>
+                            <strong>Current Hash:</strong> {{ ver.current_hash }}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-info">No evidence files were uploaded for this case.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

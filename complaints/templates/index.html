@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="py-4">
+    <div class="jumbotron text-white shadow-sm rounded-lg mb-5 p-5 position-relative overflow-hidden">
+        <h1 class="display-4 font-weight-bold">CYBER<span class="text-primary">GUARD</span></h1>
+        <p class="lead">Secure Digital Forensics & Incident Response Framework</p>
+        <hr class="my-4 border-secondary">
+        
+        {% if user.is_authenticated %}
+            {% if user.is_staff %}
+                <a class="btn btn-primary btn-lg font-weight-bold shadow-sm px-4 mt-2" href="{% url 'investigator_dashboard' %}" role="button">
+                    Enter Investigator Dashboard <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            {% else %}
+                <a class="btn btn-danger btn-lg font-weight-bold shadow-sm px-4 mt-2" href="{% url 'victim_dashboard' %}" role="button">
+                    Go to My Reports <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            {% endif %}
+        {% else %}
+            <a class="btn btn-primary btn-lg font-weight-bold shadow-sm px-4 mt-2 mr-2" href="{% url 'login' %}" role="button">
+                <i class="fas fa-user-shield mr-1"></i> Victim Portal
+            </a>
+            <a class="btn btn-outline-light btn-lg font-weight-bold px-4 mt-2" href="{% url 'investigator_login' %}" role="button">
+                <i class="fas fa-fingerprint mr-1"></i> Investigator Portal
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm bg-white h-100">
+                <div class="card-body d-flex align-items-center justify-content-between p-4">
+                    <div>
+                        <h6 class="text-muted text-uppercase font-weight-bold small mb-1">
+                            {% if user.is_staff %}Total Logs Filed (Global){% else %}My Filed Reports{% endif %}
+                        </h6>
+                        <h2 class="font-weight-bold mb-0 text-dark">{{ total_logs }}</h2>
+                    </div>
+                    <div class="bg-light p-3 rounded-circle text-primary mb-0">
+                        <i class="fas fa-chart-bar fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm bg-white h-100">
+                <div class="card-body d-flex align-items-center justify-content-between p-4">
+                    <div>
+                        <h6 class="text-muted text-uppercase font-weight-bold small mb-1">Active Cases</h6>
+                        <h2 class="font-weight-bold mb-0 text-warning">{{ active_cases }}</h2>
+                    </div>
+                    <div class="bg-light p-3 rounded-circle text-warning mb-0">
+                        <i class="fas fa-search-plus fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm bg-white h-100">
+                <div class="card-body d-flex align-items-center justify-content-between p-4">
+                    <div>
+                        <h6 class="text-muted text-uppercase font-weight-bold small mb-1">Integrity Verified</h6>
+                        <h2 class="font-weight-bold mb-0 text-success">100%</h2>
+                    </div>
+                    <div class="bg-light p-3 rounded-circle text-success mb-0">
+                        <i class="fas fa-shield-alt fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+<style>
+    .jumbotron {
+        background: linear-gradient(135deg, #1f242d 0%, #323a49 100%) !important;
+    }
+</style>
+{% endblock %}
